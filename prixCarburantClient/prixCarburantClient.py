@@ -1,14 +1,13 @@
-import urllib.request
-import zipfile
-from math import radians, cos, sin, asin, sqrt
-import xml.etree.ElementTree as ET
-from datetime import datetime, timedelta
-import logging
-import sys
 import csv
+import logging
 import os
 import shutil
-
+import sys
+import urllib.request
+import xml.etree.ElementTree as ET
+import zipfile
+from datetime import datetime, timedelta
+from math import asin, cos, radians, sin, sqrt
 
 """
     PrixCarburantClient
@@ -148,15 +147,14 @@ class PrixCarburantClient(object):
                  "https://static.data.gouv.fr/resources/prix-des-carburants-en-france/20181117-111538/active-stations.csv",
                  "station.csv")
             self.stations = self.loadStation('station.csv')
-            self.downloadFile("https://donnees.roulez-eco.fr/opendata/jour",
+            self.downloadFile("https://donnees.roulez-eco.fr/opendata/instantane",
                           "PrixCarburants_instantane.zip")
             self.unzipFile("PrixCarburants_instantane.zip", './PrixCarburantsData')
-            self.xmlData = "./PrixCarburantsData/PrixCarburants_quotidien_" + \
-                 aDaybefore.strftime("%Y%m%d") + ".xml"
+            self.xmlData = "./PrixCarburantsData/PrixCarburants_instantane.xml"
             self.stationsXML = self.decodeXML(self.xmlData)
             self.lastUpdate = datetime.today().date()
         except:
-            logging.warning("Failed to download new data, will be retry ")
+            logging.warning("Failed to download new data, will retry later")
 
     def extractSpecificStation(self, listToExtract):
         stationsExtracted = {}
@@ -193,7 +191,9 @@ class PrixCarburantClient(object):
             self.extractPrice(elementxml, self._XML_SP98_TAG),
             self.extractPrice(elementxml, self._XML_E10_TAG),
             self.extractPrice(elementxml, self._XML_E85_TAG),
-            self.extractPrice(elementxml, self._XML_GPL_TAG))
+            self.extractPrice(elementxml, self._XML_GPL_TAG),
+            elementxml.attrib['longitude'],
+            elementxml.attrib['latitude'])
         if object.isClose():
             logging.debug("station is closed")
             raise Exception('Station is closed')
@@ -244,6 +244,8 @@ class StationEssence(object):
     name = ""
     adress = ""
     id = 0
+    longitude = 0.0
+    latitude = 0.0
     gazoil = {}
     e95 = {}
     e98 = {}
@@ -251,7 +253,7 @@ class StationEssence(object):
     e85 = {}
     gpl = {}
 
-    def __init__(self, name, adress, id, gazoil, e95, e98, e10, e85, gpl):
+    def __init__(self, name, adress, id, gazoil, e95, e98, e10, e85, gpl,longitude,latitude):
         self.name = name
         self.adress = adress
         self.id = id
@@ -261,6 +263,8 @@ class StationEssence(object):
         self.e10 = e10
         self.e85 = e85
         self.gpl = gpl
+        self.longitude=longitude
+        self.latitude=latitude
 
     def isClose(self):
         boole=self.e95['valeur'] == "None" and self.e98['valeur'] == "None" and self.e10['valeur'] =="None" and self.gazoil['valeur'] == "None" and self.e85['valeur'] == "None" and self.gpl['valeur'] == "None"
@@ -268,5 +272,5 @@ class StationEssence(object):
         return boole
 
     def __str__(self):
-        return "StationEssence:\n [\n - name : %s \n - adress : %s \n - id : %s \n - gazoil : %s \n - e95 : %s  \n - e98 : %s  \n - e10 : %s \n - e85 : %s \n - gplc : %s \n]" % (
-            self.name, self.adress, self.id, self.gazoil['valeur'], self.e95['valeur'], self.e98['valeur'], self.e10['valeur'], self.e85['valeur'], self.gpl['valeur'])
+        return "StationEssence:\n [\n - name : %s \n - adress : %s \n - id : %s \n - gazoil : %s \n - e95 : %s  \n - e98 : %s  \n - e10 : %s \n - e85 : %s \n - gplc : %s \n- longitude : %s \n- latitude : %s \n]" % (
+            self.name, self.adress, self.id, self.gazoil['valeur'], self.e95['valeur'], self.e98['valeur'], self.e10['valeur'], self.e85['valeur'], self.gpl['valeur'],self.longitude,self.latitude)

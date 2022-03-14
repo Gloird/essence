@@ -1,4 +1,5 @@
 import pathlib
+
 from setuptools import setup
 
 # The directory containing this file
@@ -9,16 +10,16 @@ README = ""
 
 # This call to setup() does all the work
 setup(
-    name="Prix-Carburant-FR-Client",
-    version="1.0.3",
-    description="StationEssence client",
+    name="Prix-Carburant-FR-Gloird-Client",
+    version="0.0.1",
+    description="StationEssence client by Gloird",
     long_description=README,
     long_description_content_type="text/markdown",
-    url="https://github.com/ryann72/essence",
-    author="Maxime Wantiez, Yann RITTER",
-    author_email=" ",
+    url="https://github.com/Gloird/essence",
+    author="Maxime Wantiez, Yann RITTER, Nicolas <Gloird> DUPUIS",
+    author_email="gloird@gmail.com",
     license="MIT",
-    packages=["prixCarburantClient"],
+    packages=["prixCarburantGloirdClient"],
     include_package_data=True,
     entry_points={
         "console_scripts": [
