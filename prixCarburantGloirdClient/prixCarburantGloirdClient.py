@@ -10,12 +10,12 @@ from datetime import datetime, timedelta
 from math import asin, cos, radians, sin, sqrt
 
 """
-    PrixCarburantClient
+    PrixCarburantGloirdClient
 
 """
 
 
-class PrixCarburantClient(object):
+class PrixCarburantGloirdClient(object):
 
     version = ''
     xmlData = ""
@@ -50,7 +50,7 @@ class PrixCarburantClient(object):
 
     def extractPrice(self, priceElement, type):
         valeur = 0
-        maj= ""
+        maj = ""
         try:
             xpath = ".//prix[@nom='" + type + "']"
             gazoilChild = priceElement.findall(xpath)
@@ -62,7 +62,7 @@ class PrixCarburantClient(object):
             valeur = None
         else:
             valeur = float(valeur) / 1000
-        
+
         price = {
             'valeur': str(valeur),
             'maj': str(maj)
@@ -128,7 +128,7 @@ class PrixCarburantClient(object):
         logging.debug("Removing tempory file ")
         logging.debug("   file : " + file)
         if os.path.exists(file):
-          os.remove(file)
+            os.remove(file)
 
     def reloadIfNecessary(self):
         today = datetime.today().date()
@@ -144,12 +144,13 @@ class PrixCarburantClient(object):
         aDaybefore = datetime.today() - timedelta(days=1)
         try:
             self.downloadFile(
-                 "https://static.data.gouv.fr/resources/prix-des-carburants-en-france/20181117-111538/active-stations.csv",
-                 "station.csv")
+                "https://static.data.gouv.fr/resources/prix-des-carburants-en-france/20181117-111538/active-stations.csv",
+                "station.csv")
             self.stations = self.loadStation('station.csv')
             self.downloadFile("https://donnees.roulez-eco.fr/opendata/instantane",
-                          "PrixCarburants_instantane.zip")
-            self.unzipFile("PrixCarburants_instantane.zip", './PrixCarburantsData')
+                              "PrixCarburants_instantane.zip")
+            self.unzipFile("PrixCarburants_instantane.zip",
+                           './PrixCarburantsData')
             self.xmlData = "./PrixCarburantsData/PrixCarburants_instantane.xml"
             self.stationsXML = self.decodeXML(self.xmlData)
             self.lastUpdate = datetime.today().date()
@@ -224,10 +225,9 @@ class PrixCarburantClient(object):
         self.removeFile(self.xmlData)
         self.removeFile("PrixCarburants_instantane.zip")
         try:
-          shutil.rmtree('./PrixCarburantsData')
+            shutil.rmtree('./PrixCarburantsData')
         except OSError as e:
-          logging.debug("Error: %s - %s." % (e.filename, e.strerror))
-
+            logging.debug("Error: %s - %s." % (e.filename, e.strerror))
 
     def decodeXML(self, file):
         tree = ET.parse(file)
@@ -253,7 +253,7 @@ class StationEssence(object):
     e85 = {}
     gpl = {}
 
-    def __init__(self, name, adress, id, gazoil, e95, e98, e10, e85, gpl,longitude,latitude):
+    def __init__(self, name, adress, id, gazoil, e95, e98, e10, e85, gpl, longitude, latitude):
         self.name = name
         self.adress = adress
         self.id = id
@@ -263,14 +263,15 @@ class StationEssence(object):
         self.e10 = e10
         self.e85 = e85
         self.gpl = gpl
-        self.longitude=longitude
-        self.latitude=latitude
+        self.longitude = longitude
+        self.latitude = latitude
 
     def isClose(self):
-        boole=self.e95['valeur'] == "None" and self.e98['valeur'] == "None" and self.e10['valeur'] =="None" and self.gazoil['valeur'] == "None" and self.e85['valeur'] == "None" and self.gpl['valeur'] == "None"
+        boole = self.e95['valeur'] == "None" and self.e98['valeur'] == "None" and self.e10['valeur'] == "None" and self.gazoil[
+            'valeur'] == "None" and self.e85['valeur'] == "None" and self.gpl['valeur'] == "None"
         logging.debug(""+str(boole))
         return boole
 
     def __str__(self):
         return "StationEssence:\n [\n - name : %s \n - adress : %s \n - id : %s \n - gazoil : %s \n - e95 : %s  \n - e98 : %s  \n - e10 : %s \n - e85 : %s \n - gplc : %s \n- longitude : %s \n- latitude : %s \n]" % (
-            self.name, self.adress, self.id, self.gazoil['valeur'], self.e95['valeur'], self.e98['valeur'], self.e10['valeur'], self.e85['valeur'], self.gpl['valeur'],self.longitude,self.latitude)
+            self.name, self.adress, self.id, self.gazoil['valeur'], self.e95['valeur'], self.e98['valeur'], self.e10['valeur'], self.e85['valeur'], self.gpl['valeur'], self.longitude, self.latitude)
