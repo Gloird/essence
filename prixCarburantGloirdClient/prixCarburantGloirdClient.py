@@ -193,8 +193,8 @@ class PrixCarburantGloirdClient(object):
             self.extractPrice(elementxml, self._XML_E10_TAG),
             self.extractPrice(elementxml, self._XML_E85_TAG),
             self.extractPrice(elementxml, self._XML_GPL_TAG),
-            elementxml.attrib['longitude'],
-            elementxml.attrib['latitude'])
+            float(elementxml.attrib['longitude']) / 100000,
+            float(elementxml.attrib['latitude']) / 100000)
         if object.isClose():
             logging.debug("station is closed")
             raise Exception('Station is closed')
