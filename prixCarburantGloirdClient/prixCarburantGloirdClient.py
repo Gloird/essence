@@ -61,7 +61,7 @@ class PrixCarburantGloirdClient(object):
         if valeur == 0:
             valeur = None
         else:
-            valeur = float(valeur) / 1000
+            valeur = float(valeur)
 
         price = {
             'valeur': str(valeur),
